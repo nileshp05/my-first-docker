@@ -1,4 +1,12 @@
+import os
+from datetime import date
+from dotenv import load_dotenv
 from fastapi import FastAPI, Header, HTTPException
+
+# Load environment variables from .env file
+load_dotenv()
+
+API_KEY = os.getenv("API_KEY")
 
 app = FastAPI(title="Vendor Risk Demo API")
 
@@ -43,14 +51,13 @@ VENDORS = [
 
 @app.get("/vendor-risk")
 def get_vendor_risk(x_api_key: str = Header(default=None)):
-
-    if x_api_key != "demo-api-key-123":
+    if not API_KEY or x_api_key != API_KEY:
         raise HTTPException(
             status_code=401,
             detail="Invalid API key"
         )
 
     return {
-        "report_date": "2026-09-22",
+        "report_date": date.today().isoformat(),
         "records": VENDORS
     }
